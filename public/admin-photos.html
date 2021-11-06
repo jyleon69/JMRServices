@@ -76,21 +76,66 @@
               </div>
             </div>
           </nav>
-          <main id="about-main">
-            <div class ="heading">
-                <h1><b>A little about us:</b></h1>
+          <main class = "main-photos">
+            <h1 style ="background-color: Black;color:white;" class = "service-header">PHOTO PORTAL</h1>
+            <div class = "background-photo-container">
+              <h2 style = "background-color:rgb(206, 230, 250);" class = "service-header"><b>UPLOAD TO MAKE CHANGES</b></h2>
+              <div class = "photo-selections">
+                <h3><b>Home background:</b></h3>
+                <input id = "home-input" class = "photo-sub" type = "file"/>
+                <button style ="color: white; background-color: black;" onclick = "uploadHomeFile()">CHANGE</button>
+              </div>
+              <div class = "photo-selections">
+                <h3><b>Request background:</b></h3>
+                <input id = "request-input" class = "photo-sub" type = "file"/>
+                <button style ="color: white; background-color: black;" onclick = "uploadRequestFile()">CHANGE</button>
+              </div>
             </div>
-            <div class ="about-info">
-                <h3><b>Welcome to JMR Service Company, LLC</b></h3>
+            <div class = "services-photo-container">
+              <h2 style = "background-color:rgb(206, 230, 250);"class = "service-header"><b>UPLOAD TO CHANGE SERVICE PHOTO</b></h2>
+              <div class = "photo-selections">
+                <h3><b>House Painting:</b></h3>
+                <input id = "house-input" class = "photo-sub" type = "file"/>
+                <!-- <input class = "photo-sub" type = "file" onchange = "uploadHouseFile(this.files)"/> -->
+                <button style ="color: white; background-color: black;" onclick = "uploadHouseFile()">CHANGE</button>
+              </div>
+              <div class = "photo-selections">
+                <h3><b>Commercial Painting:</b></h3>
+                <input id = "commercial-input"class = "photo-sub" type = "file"/>
+                <button style ="color: white; background-color: black;" onclick = "uploadCommercialFile()">CHANGE</button>
+              </div>
+              <div class = "photo-selections">
+                <h3><b>Sheetrock:</b></h3>
+                <input id = "sheetrock-input"class = "photo-sub" type = "file"/>
+                <button style ="color: white; background-color: black;" onclick = "uploadSheetrockFile()">CHANGE</button>
+              </div>
+              <div class = "photo-selections">
+                <h3><b>Roofing:</b></h3>
+                <input id = "roofing-input"class = "photo-sub" type = "file"/>
+                <button style ="color: white; background-color: black;" onclick = "uploadRoofingFile()">CHANGE</button>
+              </div>
+              <div class = "photo-selections">
+                <h3><b>Flooring:</b></h3>
+                <input id = "flooring-input"class = "photo-sub" type = "file"/>
+                <button style ="color: white; background-color: black;" onclick = "uploadFlooringFile()">CHANGE</button>
+              </div>
+              <div class = "photo-selections">
+                <h3><b>Pressure Washing:</b></h3>
+                <input id = "washing-input"class = "photo-sub" type = "file"/> 
+                <button style ="color: white; background-color: black;" onclick = "uploadWashingFile()">CHANGE</button>
+              </div>
+              <div class = "photo-selections">
+                <h3><b>Siding:</b></h3>
+                <input id = "siding-input"class = "photo-sub" type = "file"/>
+                <button style ="color: white; background-color: black;" onclick = "uploadSidingFile()">CHANGE</button>
+              </div>
+              <div class = "photo-selections">
+                <h3><b>Framing:</b></h3>
+                <input id = "framing-input"class = "photo-sub" type = "file"/>
+                <button style ="color: white; background-color: black;" onclick = "uploadFramingFile()">CHANGE</button>
+              </div>
             </div>
-            <div class ="about-info">
-                <h3><b>Our commitment to detail has made us the go-to experts for all of your needs. 
-                    We are skilled workers who stand behind years of experience in different service fields</b></h3>
-            </div>
-            <div class ="about-info">
-                <h3><b>Commercial and Residential Services</b></h3>
-            </div>
-        </main>
+          </main>
         <footer class = "main-footer">
             <div class = "footer-left">
                 <div class = "icon">

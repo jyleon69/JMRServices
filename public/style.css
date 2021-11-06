@@ -13,7 +13,9 @@ body {
 .navbar-light .navbar-toggler-icon {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
-
+#log-form{
+  height:100%;
+}
 a{
   text-decoration: none;
 }
@@ -183,6 +185,38 @@ a{
   font-weight: 600;
 
 }
+/*home page*/
+#home-main{
+  justify-content: space-around;
+  /* background-image: url("jmr photos/home.jpg"); */
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color:white;
+}
+.beginning{
+  display: block;
+  justify-content: space-around;
+  padding:15px;
+  text-align: center;
+}
+.solo{
+  align-items: center;
+  display:flex;
+  flex-direction: column;
+  text-align: center;
+  padding:15px;
+  justify-content: center;
+}
+.about-info{
+  align-items: center;
+  display:flex;
+  text-align: center;
+  padding:15px;
+  justify-content: center;
+  margin:15px;
+}
 /* this is unique to services */
 #services-main{
   background-color: black;
@@ -267,7 +301,7 @@ a{
   object-fit: scale-down;
   bottom: 0px;
 }
-.painting-img{
+.service-img{
   width: 100%;
 }
 .info{
@@ -280,6 +314,15 @@ a{
 /*end of services*/
 
 /*start of about page*/
+#about-main{
+  padding:10px;
+}
+.heading{
+  text-align: center;
+  background-color: black;
+  color:white;
+  padding:10px;
+}
 .signIn {
   background-color: black;
   display:flex;
@@ -305,7 +348,7 @@ a{
   padding: 10px; 
   padding-top: 25px;
   padding-bottom: 25px;
-  background-image: url("filler.jpg");
+  /* background-image: url("jmr photos/construction.jpg"); */
   background-attachment: fixed;
   background-position: center;
   background-repeat: no-repeat;
@@ -339,6 +382,94 @@ a{
   
 }
 /* end of estimate request page*/
+.admin-nav-item{
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+/*request portal*/
+.request-content{
+  display:flex;
+}
+/*photo portal*/
+.main-photos{
+  padding:20px;
+  justify-content: space-around;
+  background-color:rgb(230, 241, 250);
+}
+.background-photo-container{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 20px;
+  text-align: center;
+  border: black;
+  border-style:double;
+  border-radius: 5px;
+}
+.services-photo-container{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding: 20px;
+  text-align: center;
+  border-style:double;
+  border-radius: 5px;
+}
+.photo-selections{
+  margin-top: 10px;
+  padding:10px;
+  margin-bottom: 5px;
+  border-style: dotted;
+  border-radius: 5px;
+
+}
+ /*request portal*/
+ .request-content{
+  margin:5px;
+  flex-direction: column;
+  display:flex;
+  border-style: ridge;
+  padding:10px;
+}
+#request-list{
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+.request-bullet{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  border-style: solid;
+  border-width: .3px;
+  margin-bottom: 10px;;
+}
+.request-check{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+  width:5%;
+}
+.request-info{
+  display: flex;
+  flex-direction: column;
+  margin:10px;
+}
+.first-info{
+  display: flex;
+  flex-direction: column;
+}
+.second-info{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+.request-element{
+  margin: 10px;
+}
 @media all and (min-width: 768px) {
   body {
     /* background-color: pink; */
@@ -364,12 +495,12 @@ a{
   .left-header{
     order: initial;
     width: 505px;
-    padding-top: 30px;
+    padding-top: 35px;
     display:flex;
     flex-flow: row nowrap;
     justify-content: flex-end;
     border:none;
-    margin: 0px;
+    margin: 5px;
   }
   .right-header{
     order: initial;
@@ -384,11 +515,11 @@ a{
   .left-header-container{
     display:flex;
     flex-direction: column;
-    width: 180px;
+    width: 210px;
     align-items: center;
   }
   .right-header-container{
-    width: 180px;
+    width: 210px;
     display:flex;
     flex-direction: column;
     align-items: center;
@@ -413,9 +544,10 @@ a{
     color: white;
     text-align: center;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 16px;
     display:initial;
     padding: .5em;
+    margin-top: 10px;
   }
   .logo-image{
     height: 200px;
@@ -470,7 +602,7 @@ a{
   }
   /* home background */
   .photo-background{
-    background-image: url("filler.jpg");
+    /* background-image: url("jmr photos/home.jpg"); */
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
@@ -479,6 +611,29 @@ a{
   }
   #home{
     background-color: transparent !important;
+  }#home-main{
+    background-color: transparent !important;
+    background-image: none;
+  }
+  .beginning{
+    display: flex;
+    justify-content: space-around;
+    padding:15px;
+  }
+  .solo{
+    height: 300px;
+    align-items: center;
+    display:flex;
+  }
+  /*about page*/
+  #about-main{
+    margin: 100px;
+  }
+  .about-info{
+    height: 300px;
+    align-items: center;
+    display:flex;
+    border-style: groove;
   }
   .thumbnail-item {
     display: inline-block;
@@ -683,6 +838,15 @@ a{
   #bigger{
     max-height: 600px;
   }
+  #bigger-info{
+    width:65%;
+  }
+  #smaller-pic{
+    width:85%;
+  }
+  #small-photo{
+    max-width: 35%;
+  }
   .services-container + .services-container{
     margin-top: 10px;
   }
@@ -695,7 +859,7 @@ a{
     justify-content: center;
     text-align: center;
     align-items: center;
-    min-width: 50%;
+    min-width: 60%;
     max-width: 70%;
   }
 
@@ -707,7 +871,8 @@ a{
     position:relative;
     bottom:0;
   }
-  .painting-img{
+ 
+  .service-img{
     height: 100%;
     width:auto;
   }
@@ -781,5 +946,90 @@ a{
 
   .thumbnail-item + .thumbnail-item {
     margin-top: 20px;
+  }
+  /*admin pages*/
+  .admin-nav-item{
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+  /*request portal*/
+  .request-content{
+    margin:50px;
+    flex-direction: column;
+    display:flex;
+    border-style: ridge;
+    padding:15px;
+  }
+  #request-list{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+  }
+  .request-bullet{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    width:100%;
+    border-style: solid;
+    border-width: .3px;
+    margin-bottom: 10px;;
+  }
+  .request-check{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    width:10%;
+  }
+  .request-info{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    margin:20px;
+    width: 100%;
+  }
+  .first-info{
+    display: flex;
+    justify-content: space-between;
+    padding-right: 60px;
+  }
+  .second-info{
+    display: flex;
+    justify-content: flex-start;
+  }
+  .request-element{
+    margin: 20px;
+  }
+  /*photo portal*/
+  .main-photos{
+    padding:30px;
+    justify-content: space-around;
+    background-color:rgb(230, 241, 250);
+  }
+  .background-photo-container{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 20px;
+    text-align: center;
+    border: black;
+    border-style:double;
+    border-radius: 5px;
+  }
+  .services-photo-container{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 20px;
+    text-align: center;
+    border-style:double;
+    border-radius: 5px;
+  }
+  .photo-selections{
+    margin-top: 10px;
+    padding:10px;
+    margin-bottom: 5px;
+    border-style: dotted;
+    border-radius: 5px;
+
   }
 }                                      

@@ -32,12 +32,12 @@
 
   </head>
   <body>
-    <div class= "photo-background">
+    <div id = "home-background" class= "photo-background">
       <header id = "home" class = "main-header">
         <div id = "home" class = "top-header">
             <span class = "left-header">
                 <span class = "left-header-container">
-                    <a href = "estimateRequest.html"><p class = "estimate-button-text"> Request Estimate </p></a>
+                    <a href = "admin-estimateRequest.html"><p class = "estimate-button-text"> Request Estimate </p></a>
                 </span>
             </span>
             <span class = "logo">
@@ -45,9 +45,8 @@
             </span>
             <span class ="right-header">
                 <span class = "right-header-container">
-                  <p tyle="color:white" id="userDetails">hello</p>
-                </br>
-                  <button onclick = "logOut()" id = "signOutBtn" style ="font-size: 10px; color: white; background-color: black;">Sign Out</button>
+                  <p style="color:white" id="userDetails"></p>
+                  <button onclick = "logOut()" id = "signOutBtn" style ="font-size: 15px; color: white; background-color: black;">Sign Out</button>
                 </span>
             </span>
         </div>
@@ -59,28 +58,65 @@
           </button>
           <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav">
-              <li class="nav-item">
-                <a style =" color: white"class="nav-link active" aria-current="page" href = "index.html">HOME</a>
+              <li class="admin-nav-item">
+                <a style =" color: white"class="nav-link active" aria-current="page" href = "admin-index.html">HOME</a>
               </li>
-              <li class="nav-item">
-                <a style ="color: white"class="nav-link" href = "Services.html">SERVICES</a>
+              <li class="admin-nav-item">
+                <a style ="color: white"class="nav-link" href = "admin-services.html">SERVICES</a>
               </li>
-              <li class="nav-item">
-                <a style ="color: white" class="nav-link" href = "About.html">ABOUT</a>
+              <li class="admin-nav-item">
+                <a style ="color: white" class="nav-link" href = "admin-about.html">ABOUT</a>
+              </li>
+              <li class="admin-nav-item">
+                <a style =" color: white"class="nav-link" href = "admin-requests.html">REQUEST PORTAL</a>
+              </li>
+              <li class="admin-nav-item">
+                <a style =" color: white" class="nav-link" href = "admin-photos.html">PHOTO PORTAL</a>
               </li>
             </ul>
           </div>
         </div>
       </nav>
     
-      <div class = "beginning">
-        <p>Welcome to JMR Service Company, LLC. Our commitment to detail has made us the go-to experts for all of your needs. 
-          We are skilled workers who stand behind years of experience in different service fields.</p>
-      </div>
+      <main id= "home-main">
+        <div class ="solo">
+          <h1><b>Welcome to JMR Service Company, LLC</b></h1>
+        </div>
+        <div class ="solo">
+          <h1><b>Our commitment to detail has made us the go-to experts for all of your needs. We are skilled workers who stand 
+            behind years of experience in different service fields. We are always confident to exceed your expectations in service 
+            quality for all your residential or commercial projects. </b></h1>
+        </div>
+        <div class ="solo">
+          <h1><b>Commercial and Residential Services</b></h1>
+        </div>
+        <div class ="solo">
+          <h1><b>Give us a call!</b></h1>
+          <a href = "tel:6622028302"><h1 style = "color:white"><b>(662)-202-8302</b></h1></a>
+        </div>
+      </br>
+        <div class = "beginning">
+          <span>
+            <div class = "icon">
+              <img class ="icon" height = "40" class = "icon-image" src="icon.png"/>
+            </div>
+              <p><b>Free Quotes & Opinions</b></p>
+          </span>
+          <span>
+            <div class = "icon">
+              <img class ="icon" height = "40" class = "icon-image" src="icon.png"/>
+            </div>
+            <p><b>Professional & Timely Services</b></p>
+          </span>
+          <span>
+            <div class = "icon">
+              <img class ="icon" height = "40" class = "icon-image" src="icon.png"/>
+            </div>
+            <p><b>Satisfaction guarantee</b><p>
+          </span>
+        </div>
+      </main>
     </div>
-    <main>
-     
-    </main>
     <footer class = "main-footer">
       <div class = "footer-left">
         <div class = "icon">
