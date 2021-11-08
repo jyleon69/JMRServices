@@ -81,13 +81,12 @@
             <!--this is for the form-->
             <form id = "request-form" class = "box-form">
                 <h2>REQUEST FREE ESTIMATE</h2>
-                <input class = "form-bullet" type = "text" name = "name" placeholder = "Name:"/>
-                <input class = "form-bullet" type = "text" name = "email" placeholder = "Email:" />
-                <input class = "form-bullet" type = "text" name = "phone" placeholder ="Phone:" />
-                <textarea class = "form-bullet" type = "text" name = "message" placeholder = "Message:" >Message:
-                </textarea>
-                <input name = "photo" class = "form-bullet" type = "file"/>
-                <input class = "form-bullet"type = "submit"/>
+                <input id ="name" class = "form-bullet" type = "text" name = "name" placeholder = "Name:"required/>
+                <input class = "form-bullet" type = "text" name = "email" placeholder = "Email:" required/>
+                <input class = "form-bullet" type = "text" name = "phone" placeholder ="Phone:" required/>
+                <textarea id = "message"class="form-bullet" type = "text" name = "message" placeholder = "Message:" required></textarea>
+                <input name = "photo" class = "form-bullet" type = "file" />
+                <input class = "form-bullet" type = "submit"/>
             </form>
             <!---->
         </main>

@@ -4,11 +4,12 @@ document.addEventListener("DOMContentLoaded", event =>{
 
     //references to html elemnents
     const requestList = document.querySelector('#new-request-list');
+    const progressList = document.querySelector('#in-progress-request-list');
+    const completedList = document.querySelector('#completed-request-list');
     const form = document.querySelector('#request-form');
 
     //create element and render request to website
-    
-    function renderRequests(doc){
+    function renderRequests(doc, doc2, list){
         let div = document.createElement('div');
         let div2 = document.createElement('div');
         let div3 = document.createElement('div');
@@ -23,19 +24,20 @@ document.addEventListener("DOMContentLoaded", event =>{
         let photo = document.createElement('p');
 
         input.setAttribute('data-id', doc.id);
+        input.setAttribute('id', doc2.id);
         name.textContent = doc.data().name;
         email.textContent = doc.data().email;
         phone.textContent = doc.data().phone;
-        message.textContent = doc.data().message;
-        photo.textContent = doc.data().photo;
+        message.textContent = doc2.data().message;
+        photo.textContent = doc2.data().photo;
 
         div2.appendChild(name);
         div2.appendChild(email);
         div2.appendChild(phone);
         div3.appendChild(message);
         div3.appendChild(photo);
-        if(requestList){
-            requestList.appendChild(div);
+        if(list){
+            list.appendChild(div);
         }
         
         div.appendChild(span);
@@ -44,6 +46,7 @@ document.addEventListener("DOMContentLoaded", event =>{
         span2.appendChild(div2);
         span2.appendChild(div3);
         input.type = ['checkbox'];
+        input.name = ['check'];
         div.classList = ['request-bullet'];
         input.classList = ['new-check'];
         span.classList = ['request-check'];
@@ -59,12 +62,64 @@ document.addEventListener("DOMContentLoaded", event =>{
     }
 
     //getting data from the collection of request and for each render request
-    db.collection('new-requests').get().then((snapshot)=>{
-        snapshot.docs.forEach(doc =>{
-            renderRequests(doc);
+    const request = db.collection('new-requests');
+        request
+        .get()
+        .then(collec =>{
+
+            collec.docs.forEach(d =>{
+                db.collection('new-requests')
+                .doc(d.id)
+                .collection('requests')
+                .get()
+                .then(c =>{
+                    c.docs.forEach(a =>{
+                        // console.log(a.data())
+                        renderRequests(d,a,requestList);
+                    })
+                })
+            })
         })
-    })
+    //getting data from the collection of in-progress and for each render request
+    const progress = db.collection('in-progress');
+        progress
+        .get()
+        .then(collec =>{
+
+            collec.docs.forEach(d =>{
+                db.collection('in-progress')
+                .doc(d.id)
+                .collection('requests')
+                .get()
+                .then(c =>{
+                    c.docs.forEach(a =>{
+                        // console.log(a.data())
+                        renderRequests(d,a,progressList);
+                    })
+                })
+            })
+        })
+     //getting data from the collection of completed and for each render request
+     const complete = db.collection('completed');
+     complete
+     .get()
+     .then(collec =>{
+
+         collec.docs.forEach(d =>{
+             db.collection('completed')
+             .doc(d.id)
+             .collection('requests')
+             .get()
+             .then(c =>{
+                 c.docs.forEach(a =>{
+                     // console.log(a.data())
+                     renderRequests(d,a,completedList);
+                 })
+             })
+         })
+     })
     //saving data from form
+    
     if(form){
         form.addEventListener('submit', (e) =>{
             e.preventDefault();
@@ -72,14 +127,26 @@ document.addEventListener("DOMContentLoaded", event =>{
                 name: form.name.value,
                 email:form.email.value,
                 phone:form.phone.value,
-                message:form.message.value,
-                photo: form.photo.value
-            });
-            form.name.value = '';
-            form.email.value = '';
-            form.phone.value= '' ;
-            form.message.value = '';
-            form.photo.value = '';
+            })
+            .then(docRef => {
+                const ID = docRef.id;
+                db.collection('new-requests')
+                .doc(ID)
+                .collection('requests').add({
+                    message:form.message.value,
+                    photo: form.photo.value
+
+                })
+                .then(() =>{
+                    form.name.value= '',
+                    form.email.value = '',
+                    form.phone.value= '' ,
+                    form.message.value = '',
+                    form. photo.value = ''
+                })
+            })
+            .catch(error => console.error("Error adding document: ", error))
+            
         })
     }
     //if auth changes get username and diaplay it
@@ -198,6 +265,87 @@ document.addEventListener("DOMContentLoaded", event =>{
     //   document.getElementById("home-main").style.backgroundImage = url
 });
 
+//change to in progress database
+function changeProgress(){
+    const db = firebase.firestore();
+    const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
+
+    checkboxes.forEach((checkbox) => {
+        const ID = checkbox.getAttribute('data-id');
+        const subID = checkbox.getAttribute('id');
+
+        const old = db.collection('new-requests').doc(ID);
+            old
+            .get()
+            .then( d =>{
+                console.log(d.data())
+                db.collection('in-progress')
+                .doc(ID).set({
+                    name: d.data().name,
+                    email:d.data().email,
+                    phone:d.data().phone
+                })
+            })
+        const sub = db.collection('new-requests').doc(ID).collection('requests').doc(subID);
+            sub
+            .get()
+            .then(c =>{
+                console.log(c.data())
+                db.collection('in-progress')
+                .doc(ID)
+                .collection('requests')
+                .doc(subID).set({
+                    message:c.data().message,
+                    photo: c.data().photo
+
+                })
+                .then(() =>{
+                    db.collection("new-requests").doc(ID).collection("requests").doc(subID).delete()
+                    db.collection("new-requests").doc(ID).delete()
+                })
+            })  
+    })
+}
+function completed(){
+    const db = firebase.firestore();
+    const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
+
+    checkboxes.forEach((checkbox) => {
+        const ID = checkbox.getAttribute('data-id');
+        const subID = checkbox.getAttribute('id');
+
+        const old = db.collection('in-progress').doc(ID);
+            old
+            .get()
+            .then( d =>{
+                console.log(d.data())
+                db.collection('completed')
+                .doc(ID).set({
+                    name: d.data().name,
+                    email:d.data().email,
+                    phone:d.data().phone
+                })
+            })
+        const sub = db.collection('in-progress').doc(ID).collection('requests').doc(subID);
+            sub
+            .get()
+            .then(c =>{
+                console.log(c.data())
+                db.collection('completed')
+                .doc(ID)
+                .collection('requests')
+                .doc(subID).set({
+                    message:c.data().message,
+                    photo: c.data().photo
+
+                })
+                .then(() =>{
+                    db.collection("in-progress").doc(ID).collection("requests").doc(subID).delete()
+                    db.collection("in-progress").doc(ID).delete()
+                })
+            })  
+    })
+}
 //updating service images
 //updating img in home painting 
 function uploadHomeFile(){
@@ -294,6 +442,7 @@ function uploadRoofingFile(){
     })
     input.value = '';  
 }
+//updating img in flooring
 function uploadFlooringFile(){
     const storageRef = firebase.storage().ref();
     const flooringRef = storageRef.child('flooring.jpg');
@@ -309,6 +458,7 @@ function uploadFlooringFile(){
     })
     input.value = '';  
 }
+//updating img in pressure-washing
 function uploadWashingFile(){
     const storageRef = firebase.storage().ref();
     const washingRef = storageRef.child('washing.jpg');
@@ -324,6 +474,7 @@ function uploadWashingFile(){
     })
     input.value = '';  
 }
+//updating img in siding
 function uploadSidingFile(){
     const storageRef = firebase.storage().ref();
     const sidingRef = storageRef.child('siding.jpg');
@@ -339,6 +490,7 @@ function uploadSidingFile(){
     })
     input.value = '';  
 }
+//updating img in framing
 function uploadFramingFile(){
     const storageRef = firebase.storage().ref();
     const framingRef = storageRef.child('framing.jpg');
@@ -354,6 +506,7 @@ function uploadFramingFile(){
     })
     input.value = '';  
 }
+
 //going to log in page
 function logIn(){
     newwindow =window.open('logIn.html', 'name', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
