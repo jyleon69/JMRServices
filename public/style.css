@@ -470,6 +470,9 @@ a{
 .request-element{
   margin: 10px;
 }
+.request-photos{
+  width: 85%;
+}
 @media all and (min-width: 768px) {
   body {
     /* background-color: pink; */
@@ -984,13 +987,14 @@ a{
   }
   .request-info{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-evenly;
     margin:20px;
     width: 100%;
   }
   .first-info{
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
     padding-right: 60px;
   }
@@ -998,9 +1002,23 @@ a{
     display: flex;
     justify-content: flex-start;
   }
+  .photo-cont{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    align-content: center;
+  }
+  .request-text{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+  }
   .request-element{
     margin: 20px;
   }
+  /* .request-photos{
+    width: 30%
+  } */
   /*photo portal*/
   .main-photos{
     padding:30px;

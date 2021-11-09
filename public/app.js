@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", event =>{
         let div = document.createElement('div');
         let div2 = document.createElement('div');
         let div3 = document.createElement('div');
+        let div4 = document.createElement('div');
+        let div5 = document.createElement('div');
         let input = document.createElement('input');
         let span = document.createElement('span');
         let span2 = document.createElement('span');
@@ -21,7 +23,7 @@ document.addEventListener("DOMContentLoaded", event =>{
         let email = document.createElement('p');
         let phone = document.createElement('p');
         let message = document.createElement('p');
-        let photo = document.createElement('p');
+        let photo = document.createElement('img');
 
         input.setAttribute('data-id', doc.id);
         input.setAttribute('id', doc2.id);
@@ -29,13 +31,15 @@ document.addEventListener("DOMContentLoaded", event =>{
         email.textContent = doc.data().email;
         phone.textContent = doc.data().phone;
         message.textContent = doc2.data().message;
-        photo.textContent = doc2.data().photo;
+        const pic = doc2.data().photo;
 
         div2.appendChild(name);
         div2.appendChild(email);
         div2.appendChild(phone);
         div3.appendChild(message);
-        div3.appendChild(photo);
+        div4.appendChild(photo);
+        div5.appendChild(div2);
+        div5.appendChild(div3);
         if(list){
             list.appendChild(div);
         }
@@ -43,8 +47,8 @@ document.addEventListener("DOMContentLoaded", event =>{
         div.appendChild(span);
         div.appendChild(span2);
         span.appendChild(input);
-        span2.appendChild(div2);
-        span2.appendChild(div3);
+        span2.appendChild(div5);
+        span2.appendChild(div4);
         input.type = ['checkbox'];
         input.name = ['check'];
         div.classList = ['request-bullet'];
@@ -53,13 +57,24 @@ document.addEventListener("DOMContentLoaded", event =>{
         span2.classList = ['request-info'];
         div2.classList = ['first-info'];
         div3.classList = ['second-info'];
+        div4.classList = ['photo-cont'];
+        div5.classList = ['request-text'];
         name.classList = ['request-elements'];
         email.classList = ['request-elements'];
         phone.classList = ['request-elements'];
         message.classList = ['request-elements'];
-        photo.classList = ['request-elements'];
+        photo.classList = ['request-photos'];
+        photo.id = [pic];
+
+        const storageRef = firebase.storage().ref();
+        const ref = storageRef.child(pic);
+        ref.getDownloadURL()
+        .then((url) => {
+            photo.setAttribute('src', url);
+        })
 
     }
+
 
     //getting data from the collection of request and for each render request
     const request = db.collection('new-requests');
@@ -118,6 +133,37 @@ document.addEventListener("DOMContentLoaded", event =>{
              })
          })
      })
+     //saving data from form
+    
+    // if(form){
+    //     form.addEventListener('submit', (e) =>{
+    //         e.preventDefault();
+    //         db.collection('new-requests').add({
+    //             name: form.name.value,
+    //             email:form.email.value,
+    //             phone:form.phone.value,
+    //         })
+    //         .then(docRef => {
+    //             const ID = docRef.id;
+    //             db.collection('new-requests')
+    //             .doc(ID)
+    //             .collection('requests').add({
+    //                 message:form.message.value,
+    //                 photo: form.photo.value
+
+    //             })
+    //             .then(() =>{
+    //                 form.name.value= '',
+    //                 form.email.value = '',
+    //                 form.phone.value= '' ,
+    //                 form.message.value = '',
+    //                 form. photo.value = ''
+    //             })
+    //         })
+    //         .catch(error => console.error("Error adding document: ", error))
+            
+    //     })
+    // }
     //saving data from form
     
     if(form){
@@ -130,11 +176,13 @@ document.addEventListener("DOMContentLoaded", event =>{
             })
             .then(docRef => {
                 const ID = docRef.id;
+                const photoRef = ID;
+                savePhoto(ID);
                 db.collection('new-requests')
                 .doc(ID)
                 .collection('requests').add({
                     message:form.message.value,
-                    photo: form.photo.value
+                    photo: photoRef
 
                 })
                 .then(() =>{
@@ -148,6 +196,17 @@ document.addEventListener("DOMContentLoaded", event =>{
             .catch(error => console.error("Error adding document: ", error))
             
         })
+    }
+    //function to save photo of request
+    function savePhoto(ID){
+        const storageRef = firebase.storage().ref();
+        const ref= storageRef.child(ID);
+        const input = document.querySelector('#photoUpload');
+
+        const file = input.files.item(0);
+
+        const task = ref.put(file);
+
     }
     //if auth changes get username and diaplay it
     firebase.auth().onAuthStateChanged((user) => {
@@ -271,10 +330,12 @@ function changeProgress(){
     const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
 
     checkboxes.forEach((checkbox) => {
-        const ID = checkbox.getAttribute('data-id');
+        var ID = checkbox.getAttribute('data-id');
+        const checkID = checkbox.getAttribute('data-id');
         const subID = checkbox.getAttribute('id');
-
         const old = db.collection('new-requests').doc(ID);
+        // console.log(exists('new-requests', 'in-progress', checkID))
+        // if(exists('new-requests', 'in-progress', checkID) == ID){
             old
             .get()
             .then( d =>{
@@ -286,6 +347,13 @@ function changeProgress(){
                     phone:d.data().phone
                 })
             })
+        // }else{
+        //     console.log('it exists')
+        //     console.log(exists('new-requests', 'in-progress', checkID))
+        //     ID = exists('new-requests', 'in-progress', checkID);
+            
+        // }
+            
         const sub = db.collection('new-requests').doc(ID).collection('requests').doc(subID);
             sub
             .get()
@@ -304,6 +372,32 @@ function changeProgress(){
                     db.collection("new-requests").doc(ID).delete()
                 })
             })  
+    })
+}
+function exists(fromCollection, toCollection, ID){
+    const db = firebase.firestore();
+    const fromParent = db.collection(fromCollection);
+    const toParent = db.collection(toCollection);
+     toParent
+     .get()
+     .then(collec =>{
+        collec.docs.forEach(t =>{
+            fromParent.doc(ID)
+            .get()
+            .then( f =>{
+                if(t.data().name == f.data().name && t.data().email == f.data().email && t.data().phone == f.data().phone){
+                    console.log('file exists in the next database')
+                    var matchID = ID;
+                    console.log('the matched ID ')
+                    console.log(t.id)
+                    matchID = t.id;
+                    console.log('this is the saved ID')
+                    console.log(matchID)
+                    return matchID;
+                }
+                
+            })
+        })
     })
 }
 function completed(){
