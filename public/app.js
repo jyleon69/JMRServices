@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", event =>{
     const requestList = document.querySelector('#new-request-list');
     const progressList = document.querySelector('#in-progress-request-list');
     const completedList = document.querySelector('#completed-request-list');
+    const trashList = document.querySelector('#trash-list');
     const form = document.querySelector('#request-form');
 
     //create element and render request to website
@@ -23,32 +24,53 @@ document.addEventListener("DOMContentLoaded", event =>{
         let email = document.createElement('p');
         let phone = document.createElement('p');
         let message = document.createElement('p');
+        let m= document.createElement('p');
         let photo = document.createElement('img');
+        let userIP = document.createElement('p');
+        let userC = document.createElement('p');
+        let userD = document.createElement('p');
 
         input.setAttribute('data-id', doc.id);
         input.setAttribute('id', doc2.id);
-        name.textContent = doc.data().name;
-        email.textContent = doc.data().email;
-        phone.textContent = doc.data().phone;
+        // var str = new String("Name: ");
+        // var strB = str.bold();
+        name.textContent = "Name: " + doc.data().name;
+        email.textContent = 'Email: ' + doc.data().email;
+        phone.textContent = 'Phone: ' + doc.data().phone;
+        m.textContent ='Message: ';
         message.textContent = doc2.data().message;
+        userIP.textContent = 'Processed by: ' +doc2.data().userIP;
+        userC.textContent = 'Completed by: ' + doc2.data().userC;
+        userD.textContent = 'Deleted by: ' + doc2.data().userD;
         const pic = doc2.data().photo;
 
         div2.appendChild(name);
         div2.appendChild(email);
         div2.appendChild(phone);
+        div3.appendChild(m);
         div3.appendChild(message);
+        if(doc2.data().userIP){
+            div3.appendChild(userIP);
+        }
+        if(doc2.data().userC){
+            div3.appendChild(userC);
+        }
+        if(doc2.data().userD){
+            div3.appendChild(userD);
+        }
         div4.appendChild(photo);
         div5.appendChild(div2);
         div5.appendChild(div3);
+       
         if(list){
             list.appendChild(div);
         }
-        
         div.appendChild(span);
         div.appendChild(span2);
         span.appendChild(input);
         span2.appendChild(div5);
         span2.appendChild(div4);
+        
         input.type = ['checkbox'];
         input.name = ['check'];
         div.classList = ['request-bullet'];
@@ -63,18 +85,22 @@ document.addEventListener("DOMContentLoaded", event =>{
         email.classList = ['request-elements'];
         phone.classList = ['request-elements'];
         message.classList = ['request-elements'];
-        photo.classList = ['request-photos'];
-        photo.id = [pic];
+        userIP.classList = ['request-elements'];
+        userC.classList = ['request-elements'];
+        userD.classList = ['request-elements'];
+        if(doc2.data().photo){
+            photo.classList = ['request-photos'];
+            photo.id = [pic];
 
-        const storageRef = firebase.storage().ref();
-        const ref = storageRef.child(pic);
-        ref.getDownloadURL()
-        .then((url) => {
-            photo.setAttribute('src', url);
-        })
+            const storageRef = firebase.storage().ref();
+            const ref = storageRef.child(pic);
+            ref.getDownloadURL()
+            .then((url) => {
+                photo.setAttribute('src', url);
+            })
+        } 
 
     }
-
 
     //getting data from the collection of request and for each render request
     const request = db.collection('new-requests');
@@ -95,6 +121,7 @@ document.addEventListener("DOMContentLoaded", event =>{
                 })
             })
         })
+
     //getting data from the collection of in-progress and for each render request
     const progress = db.collection('in-progress');
         progress
@@ -114,6 +141,7 @@ document.addEventListener("DOMContentLoaded", event =>{
                 })
             })
         })
+
      //getting data from the collection of completed and for each render request
      const complete = db.collection('completed');
      complete
@@ -133,39 +161,27 @@ document.addEventListener("DOMContentLoaded", event =>{
              })
          })
      })
-     //saving data from form
-    
-    // if(form){
-    //     form.addEventListener('submit', (e) =>{
-    //         e.preventDefault();
-    //         db.collection('new-requests').add({
-    //             name: form.name.value,
-    //             email:form.email.value,
-    //             phone:form.phone.value,
-    //         })
-    //         .then(docRef => {
-    //             const ID = docRef.id;
-    //             db.collection('new-requests')
-    //             .doc(ID)
-    //             .collection('requests').add({
-    //                 message:form.message.value,
-    //                 photo: form.photo.value
 
-    //             })
-    //             .then(() =>{
-    //                 form.name.value= '',
-    //                 form.email.value = '',
-    //                 form.phone.value= '' ,
-    //                 form.message.value = '',
-    //                 form. photo.value = ''
-    //             })
-    //         })
-    //         .catch(error => console.error("Error adding document: ", error))
-            
-    //     })
-    // }
+      //getting data from the collection of atrash and for each render request
+      const trash = db.collection('trash');
+      trash
+      .get()
+      .then(collec =>{
+          collec.docs.forEach(d =>{
+              db.collection('trash')
+              .doc(d.id)
+              .collection('requests')
+              .get()
+              .then(c =>{
+                  c.docs.forEach(a =>{
+                      // console.log(a.data())
+                      renderRequests(d,a,trashList);
+                  })
+              })
+          })
+      })
+
     //saving data from form
-    
     if(form){
         form.addEventListener('submit', (e) =>{
             e.preventDefault();
@@ -176,16 +192,17 @@ document.addEventListener("DOMContentLoaded", event =>{
             })
             .then(docRef => {
                 const ID = docRef.id;
-                const photoRef = ID;
-                savePhoto(ID);
+                // const photoRef = ID;
+                // savePhoto(ID);
                 db.collection('new-requests')
                 .doc(ID)
                 .collection('requests').add({
                     message:form.message.value,
-                    photo: photoRef
+                    photo: ''
 
                 })
-                .then(() =>{
+                .then(subdocRef =>{
+                    savePhoto(ID,subdocRef.id, form.message.value);
                     form.name.value= '',
                     form.email.value = '',
                     form.phone.value= '' ,
@@ -197,17 +214,27 @@ document.addEventListener("DOMContentLoaded", event =>{
             
         })
     }
+
     //function to save photo of request
-    function savePhoto(ID){
+    function savePhoto(ID, subID, mssg){
         const storageRef = firebase.storage().ref();
-        const ref= storageRef.child(ID);
         const input = document.querySelector('#photoUpload');
+        if(input.files.item(0)){
+            const ref= storageRef.child(subID);
+            const file = input.files.item(0);
+            const task = ref.put(file);
+            db.collection('new-requests')
+            .doc(ID)
+            .collection('requests')
+            .doc(subID).set({
+                message :mssg,
+                photo: subID
 
-        const file = input.files.item(0);
-
-        const task = ref.put(file);
-
+            })
+            
+        }
     }
+
     //if auth changes get username and diaplay it
     firebase.auth().onAuthStateChanged((user) => {
             if (user) {
@@ -323,6 +350,35 @@ document.addEventListener("DOMContentLoaded", event =>{
       //changing home background
     //   document.getElementById("home-main").style.backgroundImage = url
 });
+function getUsername(callback){
+    const db = firebase.firestore();
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+        // User logged in already or has just logged in.
+        console.log('got in to getUsername function')
+        const users = db.collection('users');
+            users
+            .get()
+            .then(collec =>{
+                collec.docs.forEach(d =>{
+                    users
+                    .doc(d.id)
+                    .collection('info')
+                    .get()
+                    .then(c =>{
+                        c.docs.forEach(a =>{
+                            if(user.uid ==a.data().UID){
+                                callback(a.data().name)
+                            }           
+                        })
+                    })
+                })
+            })
+        } else {
+        // User not logged in or has just logged out.
+        }
+  });
+}
 
 //change to in progress database
 function changeProgress(){
@@ -330,114 +386,450 @@ function changeProgress(){
     const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
 
     checkboxes.forEach((checkbox) => {
+        console.log(checkboxes)
         var ID = checkbox.getAttribute('data-id');
-        const checkID = checkbox.getAttribute('data-id');
+        const oldID = checkbox.getAttribute('data-id');
         const subID = checkbox.getAttribute('id');
         const old = db.collection('new-requests').doc(ID);
-        // console.log(exists('new-requests', 'in-progress', checkID))
-        // if(exists('new-requests', 'in-progress', checkID) == ID){
-            old
-            .get()
-            .then( d =>{
-                console.log(d.data())
-                db.collection('in-progress')
-                .doc(ID).set({
-                    name: d.data().name,
-                    email:d.data().email,
-                    phone:d.data().phone
+        var userName = '';
+        
+        exists('new-requests', 'in-progress', oldID, (matchID) => {
+            console.log('hey 1st')
+            console.log('matchID ' + matchID)
+            console.log('ID ' + ID)
+            if(!matchID){
+                console.log('inside if')
+                console.log('matchID' + matchID)
+                old
+                .get()
+                .then( d =>{
+                    console.log(d.data())
+                    console.log('doesnt exist')
+                    db.collection('in-progress')
+                    .doc(ID).set({
+                        name: d.data().name,
+                        email:d.data().email,
+                        phone:d.data().phone
+                    })
                 })
-            })
-        // }else{
-        //     console.log('it exists')
-        //     console.log(exists('new-requests', 'in-progress', checkID))
-        //     ID = exists('new-requests', 'in-progress', checkID);
-            
-        // }
-            
-        const sub = db.collection('new-requests').doc(ID).collection('requests').doc(subID);
-            sub
-            .get()
-            .then(c =>{
-                console.log(c.data())
-                db.collection('in-progress')
-                .doc(ID)
-                .collection('requests')
-                .doc(subID).set({
-                    message:c.data().message,
-                    photo: c.data().photo
-
-                })
-                .then(() =>{
-                    db.collection("new-requests").doc(ID).collection("requests").doc(subID).delete()
-                    db.collection("new-requests").doc(ID).delete()
-                })
-            })  
-    })
-}
-function exists(fromCollection, toCollection, ID){
-    const db = firebase.firestore();
-    const fromParent = db.collection(fromCollection);
-    const toParent = db.collection(toCollection);
-     toParent
-     .get()
-     .then(collec =>{
-        collec.docs.forEach(t =>{
-            fromParent.doc(ID)
-            .get()
-            .then( f =>{
-                if(t.data().name == f.data().name && t.data().email == f.data().email && t.data().phone == f.data().phone){
-                    console.log('file exists in the next database')
-                    var matchID = ID;
-                    console.log('the matched ID ')
-                    console.log(t.id)
-                    matchID = t.id;
-                    console.log('this is the saved ID')
-                    console.log(matchID)
-                    return matchID;
-                }
+            }else{
+                console.log('it exists')
+                // console.log(await exists('new-requests', 'in-progress', oldID))
+                ID = matchID;
                 
+            }
+            getUsername((userName) =>{
+                console.log('hey 2nd')
+                const sub = db.collection('new-requests').doc(oldID).collection('requests').doc(subID);
+                sub
+                .get()
+                .then(c =>{
+                    console.log(c.data())
+                    db.collection('in-progress')
+                    .doc(ID)
+                    .collection('requests')
+                    .doc(subID).set({
+                        // message:c.data() ? c.data().message : '',
+                        // photo: c.data()? c.data().photo : '',
+                        message:c.data().message,
+                        photo: c.data().photo,
+                        userIP: userName
+
+                    })
+                    .then(() =>{
+                        db.collection("new-requests").doc(oldID).collection("requests").doc(subID).delete()
+                        db.collection("new-requests").doc(oldID).delete()
+                    })
+                }) 
             })
         })
     })
 }
+function exists(fromCollection, toCollection, ID, callback){
+    console.log('got in to exist function')
+    const db = firebase.firestore();
+    const fromParent = db.collection(fromCollection);
+    const toParent = db.collection(toCollection);
+    var matchID = null;
+    let found = false;
+    toParent
+    .get()
+    .then(collec => {
+        if(collec.docs.length == 0){
+            callback(matchID)
+        }
+        for(let i = 0; i < collec.docs.length; i++){
+            let t = collec.docs[i];
+            if(found) break;
+            console.log(t.data())
+            console.log(t.data().name)
+            fromParent.doc(ID)
+            .get()
+            .then( f => {
+                console.log(f.data())
+                console.log(f.data().name)
+                if(t.data().name == f.data().name && t.data().email == f.data().email && t.data().phone == f.data().phone){
+                    matchID = t.id;
+                    console.log('this is the saved ID')
+                    console.log(matchID)
+                    found = true;
+                    callback(matchID);
+                } else if(i === (collec.docs.length-1) && !found){
+                    callback(null);
+                }
+            });
+        } 
+    });  
+}
+
 function completed(){
+    const db = firebase.firestore();
+    const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
+
+    checkboxes.forEach((checkbox) => {
+        var ID = checkbox.getAttribute('data-id');
+        const oldID = checkbox.getAttribute('data-id');
+        const subID = checkbox.getAttribute('id');
+        const old = db.collection('in-progress').doc(ID);
+        var userName = '';
+        
+        exists('in-progress', 'completed', oldID, (matchID) => {
+            if(!matchID){
+                old
+                .get()
+                .then( d =>{
+                    console.log(d.data())
+                    db.collection('completed')
+                    .doc(ID).set({
+                        name: d.data().name,
+                        email:d.data().email,
+                        phone:d.data().phone
+                    })
+                })
+            }else{
+                console.log('it exists')
+                ID = matchID;
+                
+            }
+            getUsername((userName) =>{
+                const sub = db.collection('in-progress').doc(oldID).collection('requests').doc(subID);
+                sub
+                .get()
+                .then(c =>{
+                    console.log(c.data())
+                    console.log(c)
+                    db.collection('completed')
+                    .doc(ID)
+                    .collection('requests')
+                    .doc(subID).set({
+                        message:c.data().message,
+                        photo: c.data().photo,
+                        userIP: c.data().userIP,
+                        userC: userName
+
+                    })
+                    .then(() =>{
+                        db.collection('in-progress').doc(oldID).collection('requests')
+                        .get()
+                        .then( r => {
+                            var l = r.docs.length;
+                            if(l > 1){
+                                db.collection("in-progress").doc(oldID).collection("requests").doc(subID).delete()
+                            }else{
+                                db.collection("in-progress").doc(oldID).collection("requests").doc(subID).delete()
+                                db.collection("in-progress").doc(oldID).delete()
+                            }  
+                        })
+                         
+                    })
+                }) 
+            })
+        })
+    })
+}
+//moving to trash box from new request
+function moveTrashNR(){
+    const db = firebase.firestore();
+    const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
+
+    checkboxes.forEach((checkbox) => {
+        var ID = checkbox.getAttribute('data-id');
+        const oldID = checkbox.getAttribute('data-id');
+        const subID = checkbox.getAttribute('id');
+        const old = db.collection('new-requests').doc(ID);
+        var userName = '';
+        
+        exists('new-requests', 'trash', oldID, (matchID) => {
+            if(!matchID){
+                old
+                .get()
+                .then( d =>{
+                    console.log(d.data())
+                    db.collection('trash')
+                    .doc(ID).set({
+                        name: d.data().name,
+                        email:d.data().email,
+                        phone:d.data().phone
+                    })
+                })
+            }else{
+                console.log('it exists')
+                // console.log(await exists('new-requests', 'in-progress', oldID))
+                ID = matchID;
+                
+            }
+            getUsername((userName) =>{
+                const sub = db.collection('new-requests').doc(oldID).collection('requests').doc(subID);
+                sub
+                .get()
+                .then(c =>{
+                    db.collection('trash')
+                    .doc(ID)
+                    .collection('requests')
+                    .doc(subID).set({
+                        message:c.data().message,
+                        photo: c.data().photo,
+                        userD: userName
+
+                    })
+                    .then(() =>{
+                        db.collection("new-requests").doc(oldID).collection("requests").doc(subID).delete()
+                        db.collection("new-requests").doc(oldID).delete()
+                    })
+                }) 
+            })
+        })
+    })
+}
+//moving to trash box from in-progress
+function moveTrashIP(){
+    const db = firebase.firestore();
+    const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
+
+    checkboxes.forEach((checkbox) => {
+        var ID = checkbox.getAttribute('data-id');
+        const oldID = checkbox.getAttribute('data-id');
+        const subID = checkbox.getAttribute('id');
+        const old = db.collection('in-progress').doc(ID);
+        var userName = '';
+        
+        exists('in-progress', 'trash', oldID, (matchID) => {
+            if(!matchID){
+                old
+                .get()
+                .then( d =>{
+                    db.collection('trash')
+                    .doc(ID).set({
+                        name: d.data().name,
+                        email:d.data().email,
+                        phone:d.data().phone
+                    })
+                })
+            }else{
+                console.log('it exists')
+                // console.log(await exists('new-requests', 'in-progress', oldID))
+                ID = matchID;
+                
+            }
+            getUsername((userName) =>{
+                const sub = db.collection('in-progress').doc(oldID).collection('requests').doc(subID);
+                sub
+                .get()
+                .then(c =>{
+                    db.collection('trash')
+                    .doc(ID)
+                    .collection('requests')
+                    .doc(subID).set({
+                        message:c.data().message,
+                        photo: c.data().photo,
+                        userIP: c.data().userIP,
+                        userD: userName
+
+                    })
+                    .then(() =>{
+                        db.collection('in-progress').doc(oldID).collection('requests')
+                        .get()
+                        .then( r => {
+                            var l = r.docs.length;
+                            if(l > 1){
+                                db.collection("in-progress").doc(oldID).collection("requests").doc(subID).delete()
+                            }else{
+                                db.collection("in-progress").doc(oldID).collection("requests").doc(subID).delete()
+                                db.collection("in-progress").doc(oldID).delete()
+                            }  
+                        })  
+                    })
+                }) 
+            })
+        })
+    })
+}
+//moving to trash box from completed
+function moveTrashC(){
+    const db = firebase.firestore();
+    const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
+
+    checkboxes.forEach((checkbox) => {
+        var ID = checkbox.getAttribute('data-id');
+        const oldID = checkbox.getAttribute('data-id');
+        const subID = checkbox.getAttribute('id');
+        const old = db.collection('completed').doc(ID);
+        var userName = '';
+        
+        exists('completed', 'trash', oldID, (matchID) => {
+            if(!matchID){
+                old
+                .get()
+                .then( d =>{
+                    db.collection('trash')
+                    .doc(ID).set({
+                        name: d.data().name,
+                        email:d.data().email,
+                        phone:d.data().phone
+                    })
+                })
+            }else{
+                console.log('it exists')
+                // console.log(await exists('new-requests', 'in-progress', oldID))
+                ID = matchID;
+                
+            }
+            getUsername((userName) =>{
+                const sub = db.collection('completed').doc(oldID).collection('requests').doc(subID);
+                sub
+                .get()
+                .then(c =>{
+                    db.collection('trash')
+                    .doc(ID)
+                    .collection('requests')
+                    .doc(subID).set({
+                        message:c.data().message,
+                        photo: c.data().photo,
+                        userIP: c.data().userIP,
+                        userC: c.data().userC,
+                        userD: userName
+
+                    })
+                    .then(() =>{
+                        db.collection('completed').doc(oldID).collection('requests')
+                        .get()
+                        .then( r => {
+                            var l = r.docs.length;
+                            if(l > 1){
+                                db.collection("completed").doc(oldID).collection("requests").doc(subID).delete()
+                            }else{
+                                db.collection("completed").doc(oldID).collection("requests").doc(subID).delete()
+                                db.collection("completed").doc(oldID).delete()
+                            }  
+                        })  
+                    })
+                }) 
+            })
+        })
+    })
+}
+function destroy(){
     const db = firebase.firestore();
     const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
 
     checkboxes.forEach((checkbox) => {
         const ID = checkbox.getAttribute('data-id');
         const subID = checkbox.getAttribute('id');
-
-        const old = db.collection('in-progress').doc(ID);
-            old
+        const storageRef = firebase.storage().ref();
+        const ref = storageRef.child(subID);
+        db.collection("trash")
+        .doc(ID)
+        .collection("requests")
+        .doc(subID)
+        .get()
+        .then( d =>{
+            if(d.data().photo){
+                console.log('there is a photo')
+                ref.delete().then(() => {
+                    // File deleted successfully
+                }).catch((error) => {
+                    // Uh-oh, an error occurred!
+                });
+            }
+            db.collection("trash").doc(ID).collection("requests")
             .get()
-            .then( d =>{
-                console.log(d.data())
-                db.collection('completed')
-                .doc(ID).set({
-                    name: d.data().name,
-                    email:d.data().email,
-                    phone:d.data().phone
-                })
-            })
-        const sub = db.collection('in-progress').doc(ID).collection('requests').doc(subID);
-            sub
-            .get()
-            .then(c =>{
-                console.log(c.data())
-                db.collection('completed')
-                .doc(ID)
-                .collection('requests')
-                .doc(subID).set({
-                    message:c.data().message,
-                    photo: c.data().photo
-
-                })
-                .then(() =>{
-                    db.collection("in-progress").doc(ID).collection("requests").doc(subID).delete()
-                    db.collection("in-progress").doc(ID).delete()
-                })
+            .then( r => {
+                var l = r.docs.length;
+                if(l > 1){
+                    db.collection("trash").doc(ID).collection("requests").doc(subID).delete()
+                }else{
+                    db.collection("trash").doc(ID).collection("requests").doc(subID).delete()
+                    db.collection("trash").doc(ID).delete()
+                }  
             })  
+        })      
+            
+    })
+
+}
+
+//moving to archive from completed
+function archive(){
+    const db = firebase.firestore();
+    const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
+
+    checkboxes.forEach((checkbox) => {
+        var ID = checkbox.getAttribute('data-id');
+        const oldID = checkbox.getAttribute('data-id');
+        const subID = checkbox.getAttribute('id');
+        const old = db.collection('completed').doc(ID);
+        var userName = '';
+        
+        exists('completed', 'archive', oldID, (matchID) => {
+            if(!matchID){
+                old
+                .get()
+                .then( d =>{
+                    db.collection('archive')
+                    .doc(ID).set({
+                        name: d.data().name,
+                        email:d.data().email,
+                        phone:d.data().phone
+                    })
+                })
+            }else{
+                console.log('it exists')
+                // console.log(await exists('new-requests', 'in-progress', oldID))
+                ID = matchID;
+                
+            }
+            getUsername((userName) =>{
+                const sub = db.collection('completed').doc(oldID).collection('requests').doc(subID);
+                sub
+                .get()
+                .then(c =>{
+                    db.collection('archive')
+                    .doc(ID)
+                    .collection('requests')
+                    .doc(subID).set({
+                        message:c.data().message,
+                        photo: c.data().photo,
+                        userIP: c.data().userIP,
+                        userC: c.data().userC,
+                        userD: userName
+
+                    })
+                    .then(() =>{
+                        db.collection('completed').doc(oldID).collection('requests')
+                        .get()
+                        .then( r => {
+                            const l = r.docs.length;
+                            if(l > 1){
+                                db.collection("completed").doc(oldID).collection("requests").doc(subID).delete()
+                            }else{
+                                db.collection("completed").doc(oldID).collection("requests").doc(subID).delete()
+                                db.collection("completed").doc(oldID).delete()
+                            }  
+                        })  
+                    })
+                })   
+            })
+        })
     })
 }
 //updating service images
