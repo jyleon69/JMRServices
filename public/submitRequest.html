@@ -2,7 +2,6 @@
 <html>
 
     <head>
-        <script src = "employee.js"></script>
         <meta charset = "UTF-8">
         <meta name = "description" content = "Local contstruction business">
         <meta name = "keywords" content = "Construction, painting, Oxford, local business, carpentry, ceiling">
@@ -37,7 +36,8 @@
             <div class = "top-header">
                 <span class = "left-header">
                     <span class = "left-header-container">
-                        <a href = "admin-estimateRequest.html"><p class = "estimate-button-text"> Request Estimate </p></a>
+                        <a href = "estimateRequest.html"><p class = "estimate-button-text"> Request Estimate </p></a>
+                        <p class = "motto-text">Putting a plan to action, to assure your satisfaction!</p>
                     </span>
                 </span>
                 <span class = "logo">
@@ -45,83 +45,78 @@
                 </span>
                 <span class ="right-header">
                     <span class = "right-header-container">
-                      <p style="color:white" id="userDetails"></p>
-                      <button onclick = "logOut()" id = "signOutBtn" style ="font-size: 15px; color: white; background-color: black;">Sign Out</button>
+                        <a href = "tel:6622028302"><p class = "number-text" >(662)-202-8302</p></a>
+                        <p class = "location-text">Oxford, MS</p>
                     </span>
                 </span>
             </div>
-          </header>
+        </header>
 
-          <nav id="navbar-top" class="navbar navbar-expand-lg navbar-light bg-light" style="text-align: center;">
+        <nav id="navbar-top" class="navbar navbar-expand-lg navbar-light bg-light" style="text-align: center;">
             <div class="container-fluid">
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
               </button>
               <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <ul class="navbar-nav">
-                  <li class="admin-nav-item">
-                    <a style =" color: white"class="nav-link active" aria-current="page" href = "admin-index.html">HOME</a>
+                  <li class="nav-item">
+                    <a style =" color: white"class="nav-link active" aria-current="page" href = "index.html">HOME</a>
                   </li>
-                  <li class="admin-nav-item">
-                    <a style ="color: white"class="nav-link" href = "admin-services.html">SERVICES</a>
+                  <li class="nav-item">
+                    <a style =" color: white"class="nav-link" href = "Services.html">SERVICES</a>
                   </li>
-                  <li class="admin-nav-item">
-                    <a style ="color: white" class="nav-link" href = "admin-about.html">ABOUT</a>
-                  </li>
-                  <li class="admin-nav-item">
-                    <a style =" color: white"class="nav-link" href = "admin-requests.html">REQUEST PORTAL</a>
+                  <li class="nav-item">
+                    <a style =" color: white" class="nav-link" href = "About.html">ABOUT</a>
                   </li>
                 </ul>
               </div>
             </div>
-          </nav>
-          <main id ="estimate-main">
+        </nav>
+       
+        <main id ="estimate-main">
             <!--this is for the form-->
             <form id = "request-form" class = "box-form">
-                <h2>REQUEST FREE ESTIMATE</h2>
-                <input id ="name" class = "form-bullet" type = "text" name = "name" placeholder = "Name:"required/>
-                <input class = "form-bullet" type = "text" name = "email" placeholder = "Email:" required/>
-                <input class = "form-bullet" type = "text" name = "phone" placeholder ="Phone:" required/>
-                <textarea id = "message"class="form-bullet" type = "text" name = "message" placeholder = "Message:" required></textarea>
-                <input id = "photoUpload" name = "photo" class = "form-bullet" type = "file" />
-                <input class = "form-bullet" type = "submit"/>
+                <div class = "submitted">
+                  <h2>THANK YOU!</h2>
+                  <h2>YOUR REQUEST HAS BEEN SUBMITTED!</h2>
+                </div>
             </form>
             <!---->
         </main>
        
         <footer class = "main-footer">
-          <div class = "footer-left">
-            <div class = "icon">
-                <img class ="icon" height = "40" class = "icon-image" src="hours.png"/>
-            </div>
-            <div class = "top">
-                <p id = "hour" class = "footer-header-text"><b><big>HOURS</big></b></p>
-            </div>
-            <!-- <br/> -->
-            <div class = "bottom">
-              <div class = "left-side">
-                <p class ="footer-text">MON - FRI</p> 
-                <p class ="footer-text">SAT</p>
-                <p class ="footer-text">SUN</p>
+            <div class = "footer-left">
+              <div class = "icon">
+                  <img class ="icon" height = "40" class = "icon-image" src="hours.png"/>
               </div>
-              <div class = "right-side">
-                <p class ="footer-text">9:00am - 5:00pm </p>
-                <p class ="footer-text">Closed </p>
-                <p class ="footer-text">Closed</p>
+              <div class = "top">
+                  <p id = "hour" class = "footer-header-text"><b><big>HOURS</big></b></p>
+              </div>
+              <!-- <br/> -->
+              <div class = "bottom">
+                <div class = "left-side">
+                  <p class ="footer-text">MON - FRI</p> 
+                  <p class ="footer-text">SAT</p>
+                  <p class ="footer-text">SUN</p>
+                </div>
+                <div class = "right-side">
+                  <p class ="footer-text">9:00am - 5:00pm </p>
+                  <p class ="footer-text">Closed </p>
+                  <p class ="footer-text">Closed</p>
+                </div>
               </div>
             </div>
-          </div>
-          <div class = "footer-right">
-            <div class = "icon">
-              <img class ="icon" height = "40" class = "icon-image" src="contact.png"/>
+            <div class = "footer-right">
+              <div class = "icon">
+                <img class ="icon" height = "40" class = "icon-image" src="contact.png"/>
+              </div>
+              <p class = "footer-header-text"><b><big>CONTACT</big></b></p> 
+              <a href = "tel:6622028302"><p class = "footer-text" >(662)-202-8302</p></a>
+              <!-- <a class = "footer-text" href = "mailto: jason@jmrservicecompany.com">jason@jmrservicecompany.com</a> -->
+              <a href = "mailto: jason@jmrservicecompany.com"><p class = "footer-text">jason@jmrservicecompany.com</p></a>
             </div>
-            <p class = "footer-header-text"><b><big>CONTACT</big></b></p> 
-            <a href = "tel:6622028302"><p class = "footer-text" >(662)-202-8302</p></a>
-            <!-- <a class = "footer-text" href = "mailto: jason@jmrservicecompany.com">jason@jmrservicecompany.com</a> -->
-            <a href = "mailto: jason@jmrservicecompany.com"><p class = "footer-text">jason@jmrservicecompany.com</p></a>
-          </div>
-        </footer>    
-
+          </footer>
+      
         <script src = "app.js"></script>
         <script src= "scripts/main.js" charset="utf-8"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>

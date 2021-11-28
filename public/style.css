@@ -382,6 +382,9 @@ a{
   
 }
 /* end of estimate request page*/
+.submitted{
+  margin: 35px;
+}
 .admin-nav-item{
   margin-left: 30px;
   margin-right: 30px;

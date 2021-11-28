@@ -203,6 +203,7 @@ document.addEventListener("DOMContentLoaded", event =>{
                 })
                 .then(subdocRef =>{
                     savePhoto(ID,subdocRef.id, form.message.value);
+                    // window.location.replace("submitRequest.html");
                     form.name.value= '',
                     form.email.value = '',
                     form.phone.value= '' ,
@@ -239,7 +240,7 @@ document.addEventListener("DOMContentLoaded", event =>{
     firebase.auth().onAuthStateChanged((user) => {
             if (user) {
             // User logged in already or has just logged in.
-            console.log(user.uid);
+            // console.log(user.uid);
             const users = db.collection('users');
                 users
                 .get()
@@ -1004,6 +1005,7 @@ function logIn(){
 function logInFirebase(){
     var email = document.getElementById('typeEmailX');
     var password = document.getElementById('typePasswordX');
+    console.log('got in')
     console.log(email.value);
     console.log(password.value);
     firebase.auth().signInWithEmailAndPassword(email.value, password.value)
@@ -1017,8 +1019,21 @@ function logInFirebase(){
                   // User is signed in, see docs for a list of available properties
                   // https://firebase.google.com/docs/reference/js/firebase.User
                   var uid = user.uid;
-                  window.location.replace("admin-index.html");
-                  // ...
+                  const db = firebase.firestore();
+                  const users = db.collection('users').doc('admins').collection('info');
+                  users
+                  .get()
+                  .then(c => {
+                      c.docs.forEach(a => {
+                            console.log(a.data().UID)
+                            console.log(uid)
+                            if(a.data().UID == uid){
+                                window.location.replace("admin-index.html");
+                            }else{
+                                window.location.replace("employee-index.html");
+                          }
+                      })
+                  })
                 } else {
                   // User is signed out
                   // ...
@@ -1029,7 +1044,7 @@ function logInFirebase(){
             var errorCode = error.code;
             var errorMessage = error.message;
             console.log(error)
-            window.history.back();
+            window.location.replace("retryLogin.html");
         });
 }
 
