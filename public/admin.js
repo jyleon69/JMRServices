@@ -1,10 +1,9 @@
+//this redirects to index if not signed in and admin but trying to get to admin webpages
 document.addEventListener("DOMContentLoaded", event =>{
     const app = firebase.app();
     const db = firebase.firestore();
     firebase.auth().onAuthStateChanged((user) => { 
-        debugger
         if (user) {
-            debugger
             // User is signed in, see docs for a list of available properties
             // https://firebase.google.com/docs/reference/js/firebase.User
             var uid = user.uid;
@@ -19,18 +18,8 @@ document.addEventListener("DOMContentLoaded", event =>{
                 }else{
                     window.location.replace("index.html");
                 }
-                // c.docs.forEach(a => {
-                //     console.log(a.data().UID)
-                //     console.log(uid)
-                //     if(a.data().UID == uid){
-                        
-                //     }else{
-                        
-                //     }
-                // })
             })
         } else {
-            debugger
             window.location.replace("index.html")
             // User is signed out
             // ...

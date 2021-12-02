@@ -51,7 +51,7 @@
                 </span>
             </div>
           </header>
-
+          <!-- navbar from bootstrap -->
           <nav id="navbar-top" class="navbar navbar-expand-lg navbar-light bg-light" style="text-align: center;">
             <div class="container-fluid">
               <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,17 +79,16 @@
             </div>
           </nav>
           <main id ="estimate-main">
-            <!--this is for the form-->
+            <!--this is for the estimate request form-->
             <form id = "request-form" class = "box-form">
                 <h2>REQUEST FREE ESTIMATE</h2>
-                <input id ="name" class = "form-bullet" type = "text" name = "name" placeholder = "Name:"required/>
-                <input class = "form-bullet" type = "text" name = "email" placeholder = "Email:" required/>
-                <input class = "form-bullet" type = "text" name = "phone" placeholder ="Phone:" required/>
-                <textarea id = "message"class="form-bullet" type = "text" name = "message" placeholder = "Message:" required></textarea>
-                <input id = "photoUpload" name = "photo" class = "form-bullet" type = "file" />
+                <input id ="name" class = "form-bullet" type = "text" pattern = "[a-zA-Z\s]+[ ][a-zA-Z\s]+" name = "name" placeholder = "Name:"required/>
+                <input class = "form-bullet" type = "email" pattern="^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$" name = "email" placeholder = "Email:" required/>
+                <input class = "form-bullet" type = "tel" pattern="[0-9]{10,11}" name = "phone" placeholder ="Phone:" required/>
+                <textarea id = "message" class="form-bullet" type = "text" pattern = "[a-zA-Z0-9,\s]+" name = "message" placeholder = "Message:" required></textarea>
+                <input id = "photoUpload" accept="image/*" name = "photo" class = "form-bullet" type = "file" />
                 <input class = "form-bullet" type = "submit"/>
             </form>
-            <!---->
         </main>
        
         <footer class = "main-footer">
@@ -100,7 +99,6 @@
             <div class = "top">
                 <p id = "hour" class = "footer-header-text"><b><big>HOURS</big></b></p>
             </div>
-            <!-- <br/> -->
             <div class = "bottom">
               <div class = "left-side">
                 <p class ="footer-text">MON - FRI</p> 
@@ -120,7 +118,6 @@
             </div>
             <p class = "footer-header-text"><b><big>CONTACT</big></b></p> 
             <a href = "tel:6622028302"><p class = "footer-text" >(662)-202-8302</p></a>
-            <!-- <a class = "footer-text" href = "mailto: jason@jmrservicecompany.com">jason@jmrservicecompany.com</a> -->
             <a href = "mailto: jason@jmrservicecompany.com"><p class = "footer-text">jason@jmrservicecompany.com</p></a>
           </div>
         </footer>
@@ -129,7 +126,5 @@
         <script src= "scripts/main.js" charset="utf-8"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
-    
     </body>
-
 </html>

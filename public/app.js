@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", event =>{
     const trashList = document.querySelector('#trash-list');
     const form = document.querySelector('#request-form');
 
-    //create element and render request to website
+    //renders request to website
+    //creates element and sticks information from database to those elements
     function renderRequests(doc, doc2, list){
         let div = document.createElement('div');
         let div2 = document.createElement('div');
@@ -32,8 +33,7 @@ document.addEventListener("DOMContentLoaded", event =>{
 
         input.setAttribute('data-id', doc.id);
         input.setAttribute('id', doc2.id);
-        // var str = new String("Name: ");
-        // var strB = str.bold();
+
         name.textContent = "Name: " + doc.data().name;
         email.textContent = 'Email: ' + doc.data().email;
         phone.textContent = 'Phone: ' + doc.data().phone;
@@ -99,10 +99,9 @@ document.addEventListener("DOMContentLoaded", event =>{
                 photo.setAttribute('src', url);
             })
         } 
-
     }
 
-    //getting data from the collection of request and for each render request
+    //getting data from the databases of new-requests and calls function to render each one
     const request = db.collection('new-requests');
         request
         .get()
@@ -115,14 +114,13 @@ document.addEventListener("DOMContentLoaded", event =>{
                 .get()
                 .then(c =>{
                     c.docs.forEach(a =>{
-                        // console.log(a.data())
                         renderRequests(d,a,requestList);
                     })
                 })
             })
         })
 
-    //getting data from the collection of in-progress and for each render request
+    //getting data from the collection of in-progress and calls function to render each one
     const progress = db.collection('in-progress');
         progress
         .get()
@@ -142,7 +140,7 @@ document.addEventListener("DOMContentLoaded", event =>{
             })
         })
 
-     //getting data from the collection of completed and for each render request
+     //getting data from the collection of completed and calls function to render each one
      const complete = db.collection('completed');
      complete
      .get()
@@ -162,7 +160,7 @@ document.addEventListener("DOMContentLoaded", event =>{
          })
      })
 
-      //getting data from the collection of atrash and for each render request
+      //getting data from the collection of trash and calls function to render each one
       const trash = db.collection('trash');
       trash
       .get()
@@ -181,7 +179,7 @@ document.addEventListener("DOMContentLoaded", event =>{
           })
       })
 
-    //saving data from form
+    //saving data from form to new-requests database
     if(form){
         form.addEventListener('submit', (e) =>{
             e.preventDefault();
@@ -192,8 +190,6 @@ document.addEventListener("DOMContentLoaded", event =>{
             })
             .then(docRef => {
                 const ID = docRef.id;
-                // const photoRef = ID;
-                // savePhoto(ID);
                 db.collection('new-requests')
                 .doc(ID)
                 .collection('requests').add({
@@ -203,7 +199,6 @@ document.addEventListener("DOMContentLoaded", event =>{
                 })
                 .then(subdocRef =>{
                     savePhoto(ID,subdocRef.id, form.message.value);
-                    // window.location.replace("submitRequest.html");
                     form.name.value= '',
                     form.email.value = '',
                     form.phone.value= '' ,
@@ -211,32 +206,33 @@ document.addEventListener("DOMContentLoaded", event =>{
                     form. photo.value = ''
                 })
             })
-            .catch(error => console.error("Error adding document: ", error))
-            
+            .catch(error => console.error("Error adding document: ", error)) 
         })
     }
 
     //function to save photo of request
     function savePhoto(ID, subID, mssg){
         const storageRef = firebase.storage().ref();
+        //gets html input
         const input = document.querySelector('#photoUpload');
+        //if there is a file then create storage reference and stick image in it 
         if(input.files.item(0)){
-            const ref= storageRef.child(subID);
+            const ref = storageRef.child(subID);
             const file = input.files.item(0);
             const task = ref.put(file);
+            //update databse with name of photo reference and same message
             db.collection('new-requests')
             .doc(ID)
             .collection('requests')
             .doc(subID).set({
                 message :mssg,
                 photo: subID
-
-            })
-            
+            })   
         }
+        // window.location.replace("submitRequest.html");
     }
 
-    //if auth changes get username and diaplay it
+    //if auth changes,get username and display it
     firebase.auth().onAuthStateChanged((user) => {
             if (user) {
             // User logged in already or has just logged in.
@@ -264,7 +260,8 @@ document.addEventListener("DOMContentLoaded", event =>{
             // User not logged in or has just logged out.
             }
       });
-      //start of changing services img
+
+      //start of updating images
       const storageRef = firebase.storage().ref();
 
       //changing home background
@@ -282,6 +279,14 @@ document.addEventListener("DOMContentLoaded", event =>{
       requestRef.getDownloadURL()
       .then((url) => {
         document.getElementById("estimate-main").style.backgroundImage = "url(" + url + ")";
+        
+      })
+      //changing about background
+      const aboutRef = storageRef.child('about.jpg');
+
+      aboutRef.getDownloadURL()
+      .then((url) => {
+        document.getElementById("about-main").style.backgroundImage = "url(" + url + ")";
         
       })
       //changing house painting img
@@ -348,15 +353,14 @@ document.addEventListener("DOMContentLoaded", event =>{
           const img8 = document.getElementById("framing-img");
           img8.setAttribute('src', url);
       })
-      //changing home background
-    //   document.getElementById("home-main").style.backgroundImage = url
 });
+//
 function getUsername(callback){
     const db = firebase.firestore();
     firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
         // User logged in already or has just logged in.
-        console.log('got in to getUsername function')
+        if (user) {
+        //go to user database
         const users = db.collection('users');
             users
             .get()
@@ -367,6 +371,7 @@ function getUsername(callback){
                     .collection('info')
                     .get()
                     .then(c =>{
+                        //when it finds UID match, get username, from that document
                         c.docs.forEach(a =>{
                             if(user.uid ==a.data().UID){
                                 callback(a.data().name)
@@ -385,22 +390,17 @@ function getUsername(callback){
 function changeProgress(){
     const db = firebase.firestore();
     const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
-
+    //do these for each checked box
     checkboxes.forEach((checkbox) => {
-        console.log(checkboxes)
+        //get attributes and store them in variables
         var ID = checkbox.getAttribute('data-id');
         const oldID = checkbox.getAttribute('data-id');
         const subID = checkbox.getAttribute('id');
         const old = db.collection('new-requests').doc(ID);
-        var userName = '';
-        
+        //call exists function to see if user is already in database that being moved to
         exists('new-requests', 'in-progress', oldID, (matchID) => {
-            console.log('hey 1st')
-            console.log('matchID ' + matchID)
-            console.log('ID ' + ID)
+            //if no match found copy documents fields
             if(!matchID){
-                console.log('inside if')
-                console.log('matchID' + matchID)
                 old
                 .get()
                 .then( d =>{
@@ -414,67 +414,67 @@ function changeProgress(){
                     })
                 })
             }else{
-                console.log('it exists')
-                // console.log(await exists('new-requests', 'in-progress', oldID))
+                //else it exists and no need to make new document, just update ID 
                 ID = matchID;
                 
             }
+            //get user name of who is copying document to other database
             getUsername((userName) =>{
-                console.log('hey 2nd')
                 const sub = db.collection('new-requests').doc(oldID).collection('requests').doc(subID);
                 sub
                 .get()
                 .then(c =>{
-                    console.log(c.data())
+                    //set subdocument and add username
                     db.collection('in-progress')
                     .doc(ID)
                     .collection('requests')
                     .doc(subID).set({
-                        // message:c.data() ? c.data().message : '',
-                        // photo: c.data()? c.data().photo : '',
                         message:c.data().message,
                         photo: c.data().photo,
                         userIP: userName
 
                     })
+                    //delete document from old database
                     .then(() =>{
                         db.collection("new-requests").doc(oldID).collection("requests").doc(subID).delete()
                         db.collection("new-requests").doc(oldID).delete()
+                        //last minute changggeeee
+                        location.reload();
                     })
                 }) 
             })
         })
     })
 }
+//checks if user(document with same fields) exists in database that document is being copy to)
 function exists(fromCollection, toCollection, ID, callback){
-    console.log('got in to exist function')
     const db = firebase.firestore();
     const fromParent = db.collection(fromCollection);
     const toParent = db.collection(toCollection);
     var matchID = null;
     let found = false;
+
     toParent
     .get()
     .then(collec => {
+        //if database where document is being copied is empty then return the ID
         if(collec.docs.length == 0){
             callback(matchID)
         }
+        //go through database and check each document for matching fields
         for(let i = 0; i < collec.docs.length; i++){
             let t = collec.docs[i];
             if(found) break;
-            console.log(t.data())
-            console.log(t.data().name)
+            
             fromParent.doc(ID)
             .get()
             .then( f => {
-                console.log(f.data())
-                console.log(f.data().name)
+                //if thete is match, return ID from existing document
                 if(t.data().name == f.data().name && t.data().email == f.data().email && t.data().phone == f.data().phone){
                     matchID = t.id;
-                    console.log('this is the saved ID')
-                    console.log(matchID)
                     found = true;
                     callback(matchID);
+                //else return null
                 } else if(i === (collec.docs.length-1) && !found){
                     callback(null);
                 }
@@ -482,24 +482,24 @@ function exists(fromCollection, toCollection, ID, callback){
         } 
     });  
 }
-
+//change to completed database
 function completed(){
     const db = firebase.firestore();
     const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
-
+    //do these for each checked box
     checkboxes.forEach((checkbox) => {
+        //get attributes and store them in variables
         var ID = checkbox.getAttribute('data-id');
         const oldID = checkbox.getAttribute('data-id');
         const subID = checkbox.getAttribute('id');
         const old = db.collection('in-progress').doc(ID);
-        var userName = '';
-        
+        //call exists function to see if user is already in database that being moved to
         exists('in-progress', 'completed', oldID, (matchID) => {
+            //if no match found copy documents fields
             if(!matchID){
                 old
                 .get()
                 .then( d =>{
-                    console.log(d.data())
                     db.collection('completed')
                     .doc(ID).set({
                         name: d.data().name,
@@ -507,18 +507,18 @@ function completed(){
                         phone:d.data().phone
                     })
                 })
+            //else it exists and no need to make new document, just update ID 
             }else{
-                console.log('it exists')
                 ID = matchID;
                 
             }
+            //get user name of who is copying document to other database
             getUsername((userName) =>{
                 const sub = db.collection('in-progress').doc(oldID).collection('requests').doc(subID);
+                //set subdocument and add username
                 sub
                 .get()
                 .then(c =>{
-                    console.log(c.data())
-                    console.log(c)
                     db.collection('completed')
                     .doc(ID)
                     .collection('requests')
@@ -529,19 +529,23 @@ function completed(){
                         userC: userName
 
                     })
+                    //delete document from old database
                     .then(() =>{
                         db.collection('in-progress').doc(oldID).collection('requests')
                         .get()
                         .then( r => {
                             var l = r.docs.length;
+                            //if there is more than one subdocument(requests), delete only subcollection 
                             if(l > 1){
                                 db.collection("in-progress").doc(oldID).collection("requests").doc(subID).delete()
+                            //else delete all the document with subcollection
                             }else{
                                 db.collection("in-progress").doc(oldID).collection("requests").doc(subID).delete()
                                 db.collection("in-progress").doc(oldID).delete()
                             }  
-                        })
-                         
+                            //last minute changggeeee
+                            location.reload(); 
+                        })    
                     })
                 }) 
             })
@@ -552,20 +556,20 @@ function completed(){
 function moveTrashNR(){
     const db = firebase.firestore();
     const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
-
+     //do these for each checked box
     checkboxes.forEach((checkbox) => {
+        //get attributes and store them in variables
         var ID = checkbox.getAttribute('data-id');
         const oldID = checkbox.getAttribute('data-id');
         const subID = checkbox.getAttribute('id');
         const old = db.collection('new-requests').doc(ID);
-        var userName = '';
-        
+        //call exists function to see if user is already in database that being moved to
         exists('new-requests', 'trash', oldID, (matchID) => {
+            //if no match found copy documents fields
             if(!matchID){
                 old
                 .get()
                 .then( d =>{
-                    console.log(d.data())
                     db.collection('trash')
                     .doc(ID).set({
                         name: d.data().name,
@@ -573,14 +577,14 @@ function moveTrashNR(){
                         phone:d.data().phone
                     })
                 })
+            //else it exists and no need to make new document, just update ID 
             }else{
-                console.log('it exists')
-                // console.log(await exists('new-requests', 'in-progress', oldID))
-                ID = matchID;
-                
+                ID = matchID; 
             }
+            //get user name of who is copying document to other database
             getUsername((userName) =>{
                 const sub = db.collection('new-requests').doc(oldID).collection('requests').doc(subID);
+                //set subdocument and add username
                 sub
                 .get()
                 .then(c =>{
@@ -593,9 +597,12 @@ function moveTrashNR(){
                         userD: userName
 
                     })
+                    //delete document from old database
                     .then(() =>{
                         db.collection("new-requests").doc(oldID).collection("requests").doc(subID).delete()
                         db.collection("new-requests").doc(oldID).delete()
+                        //last minute changggeeee
+                        location.reload();
                     })
                 }) 
             })
@@ -606,15 +613,16 @@ function moveTrashNR(){
 function moveTrashIP(){
     const db = firebase.firestore();
     const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
-
+    //do these for each checked box
     checkboxes.forEach((checkbox) => {
+        //get attributes and store them in variables
         var ID = checkbox.getAttribute('data-id');
         const oldID = checkbox.getAttribute('data-id');
         const subID = checkbox.getAttribute('id');
         const old = db.collection('in-progress').doc(ID);
-        var userName = '';
-        
+        //call exists function to see if user is already in database that being moved to
         exists('in-progress', 'trash', oldID, (matchID) => {
+            //if no match found copy documents fields
             if(!matchID){
                 old
                 .get()
@@ -626,14 +634,14 @@ function moveTrashIP(){
                         phone:d.data().phone
                     })
                 })
+            //else it exists and no need to make new document, just update ID 
             }else{
-                console.log('it exists')
-                // console.log(await exists('new-requests', 'in-progress', oldID))
-                ID = matchID;
-                
+                ID = matchID;   
             }
+            //get user name of who is copying document to other database
             getUsername((userName) =>{
                 const sub = db.collection('in-progress').doc(oldID).collection('requests').doc(subID);
+                //set subdocument and add username
                 sub
                 .get()
                 .then(c =>{
@@ -647,18 +655,23 @@ function moveTrashIP(){
                         userD: userName
 
                     })
+                    //delete document from old database
                     .then(() =>{
                         db.collection('in-progress').doc(oldID).collection('requests')
                         .get()
                         .then( r => {
                             var l = r.docs.length;
+                            //if there is more than one subdocument(requests), delete only subcollection 
                             if(l > 1){
                                 db.collection("in-progress").doc(oldID).collection("requests").doc(subID).delete()
+                            //else delete all the document with subcollection
                             }else{
                                 db.collection("in-progress").doc(oldID).collection("requests").doc(subID).delete()
                                 db.collection("in-progress").doc(oldID).delete()
-                            }  
-                        })  
+                            } 
+                            //last minute changggeeee
+                            location.reload();  
+                        }) 
                     })
                 }) 
             })
@@ -669,15 +682,16 @@ function moveTrashIP(){
 function moveTrashC(){
     const db = firebase.firestore();
     const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
-
+    //do these for each checked box
     checkboxes.forEach((checkbox) => {
+        //get attributes and store them in variables
         var ID = checkbox.getAttribute('data-id');
         const oldID = checkbox.getAttribute('data-id');
         const subID = checkbox.getAttribute('id');
         const old = db.collection('completed').doc(ID);
-        var userName = '';
-        
+        //call exists function to see if user is already in database that being moved to
         exists('completed', 'trash', oldID, (matchID) => {
+            //if no match found copy documents fields
             if(!matchID){
                 old
                 .get()
@@ -689,14 +703,14 @@ function moveTrashC(){
                         phone:d.data().phone
                     })
                 })
+            //else it exists and no need to make new document, just update ID 
             }else{
-                console.log('it exists')
-                // console.log(await exists('new-requests', 'in-progress', oldID))
-                ID = matchID;
-                
+                ID = matchID;  
             }
+            //get user name of who is copying document to other database
             getUsername((userName) =>{
                 const sub = db.collection('completed').doc(oldID).collection('requests').doc(subID);
+                //set subdocument and add username
                 sub
                 .get()
                 .then(c =>{
@@ -711,18 +725,23 @@ function moveTrashC(){
                         userD: userName
 
                     })
+                    //delete document from old database
                     .then(() =>{
                         db.collection('completed').doc(oldID).collection('requests')
                         .get()
                         .then( r => {
                             var l = r.docs.length;
+                            //if there is more than one subdocument(requests), delete only subcollection 
                             if(l > 1){
                                 db.collection("completed").doc(oldID).collection("requests").doc(subID).delete()
+                            //else delete all the document with subcollection
                             }else{
                                 db.collection("completed").doc(oldID).collection("requests").doc(subID).delete()
                                 db.collection("completed").doc(oldID).delete()
                             }  
-                        })  
+                            //last minute changggeeee
+                            location.reload();
+                        })
                     })
                 }) 
             })
@@ -732,20 +751,22 @@ function moveTrashC(){
 function destroy(){
     const db = firebase.firestore();
     const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
-
+    //do these for each checked box
     checkboxes.forEach((checkbox) => {
+        //get attributes and store them in variables
         const ID = checkbox.getAttribute('data-id');
         const subID = checkbox.getAttribute('id');
         const storageRef = firebase.storage().ref();
         const ref = storageRef.child(subID);
+
         db.collection("trash")
         .doc(ID)
         .collection("requests")
         .doc(subID)
         .get()
         .then( d =>{
+            //if there is photo reference, then delete it
             if(d.data().photo){
-                console.log('there is a photo')
                 ref.delete().then(() => {
                     // File deleted successfully
                 }).catch((error) => {
@@ -756,32 +777,35 @@ function destroy(){
             .get()
             .then( r => {
                 var l = r.docs.length;
+                //if there is more than one subdocument then delete subdocument only
                 if(l > 1){
                     db.collection("trash").doc(ID).collection("requests").doc(subID).delete()
+                //else delete the whole document with all subcollection
                 }else{
                     db.collection("trash").doc(ID).collection("requests").doc(subID).delete()
                     db.collection("trash").doc(ID).delete()
-                }  
-            })  
-        })      
-            
+                }
+                //last minute changggeeee
+                // location.reload();  
+            }) 
+        })            
     })
-
 }
 
 //moving to archive from completed
 function archive(){
     const db = firebase.firestore();
     const checkboxes = document.querySelectorAll('input[name = "check"]:checked');
-
+    //do these for each checked box
     checkboxes.forEach((checkbox) => {
+        //get attributes and store them in variables
         var ID = checkbox.getAttribute('data-id');
         const oldID = checkbox.getAttribute('data-id');
         const subID = checkbox.getAttribute('id');
         const old = db.collection('completed').doc(ID);
-        var userName = '';
-        
+        //call exists function to see if user is already in database that being moved to
         exists('completed', 'archive', oldID, (matchID) => {
+            //if no match found copy documents fields
             if(!matchID){
                 old
                 .get()
@@ -793,14 +817,14 @@ function archive(){
                         phone:d.data().phone
                     })
                 })
+            //else it exists and no need to make new document, just update ID 
             }else{
-                console.log('it exists')
-                // console.log(await exists('new-requests', 'in-progress', oldID))
-                ID = matchID;
-                
+                ID = matchID; 
             }
+            //get user name of who is copying document to other database
             getUsername((userName) =>{
                 const sub = db.collection('completed').doc(oldID).collection('requests').doc(subID);
+                //set subdocument and add username
                 sub
                 .get()
                 .then(c =>{
@@ -812,20 +836,25 @@ function archive(){
                         photo: c.data().photo,
                         userIP: c.data().userIP,
                         userC: c.data().userC,
-                        userD: userName
+                        userA: userName
 
                     })
+                    //delete document from old database
                     .then(() =>{
                         db.collection('completed').doc(oldID).collection('requests')
                         .get()
                         .then( r => {
                             const l = r.docs.length;
+                            //if there is more than one subdocument(requests), delete only subcollection 
                             if(l > 1){
                                 db.collection("completed").doc(oldID).collection("requests").doc(subID).delete()
+                            //else delete all the document with subcollection
                             }else{
                                 db.collection("completed").doc(oldID).collection("requests").doc(subID).delete()
                                 db.collection("completed").doc(oldID).delete()
                             }  
+                            //last minute changggeeee
+                            location.reload();
                         })  
                     })
                 })   
@@ -837,14 +866,17 @@ function archive(){
 //updating img in home painting 
 function uploadHomeFile(){
     const storageRef = firebase.storage().ref();
+    //make photo reference
     const homeRef = storageRef.child('home.jpg');
     const input = document.querySelector('#home-input');
 
     const file = input.files.item(0);
 
     const task = homeRef.put(file);
+    //get URL from reference 
     homeRef.getDownloadURL()
     .then((url) => {
+        //update image source 
         document.getElementById("home-background").style.backgroundImage = "url(" + url + ")";
         document.getElementById("home-main").style.backgroundImage = "url(" + url + ")";
     })
@@ -853,30 +885,54 @@ function uploadHomeFile(){
 //updating img in request estimate background
 function uploadRequestFile(){
     const storageRef = firebase.storage().ref();
+    //make photo reference
     const requestRef = storageRef.child('request.jpg');
     const input = document.querySelector('#request-input');
 
     const file = input.files.item(0);
 
     const task = requestRef.put(file);
+    //get URL from reference 
     requestRef.getDownloadURL()
     .then((url) => {
+        //update image source 
         document.getElementById("estimate-main").style.backgroundImage = "url(" + url + ")";
+    })
+    input.value = '';
+}
+//updating img in about background
+function uploadAboutFile(){
+    const storageRef = firebase.storage().ref();
+    //make photo reference
+    const aboutRef = storageRef.child('about.jpg');
+    const input = document.querySelector('#about-input');
+
+    const file = input.files.item(0);
+
+    const task = aboutRef.put(file);
+    //get URL from reference 
+    aboutRef.getDownloadURL()
+    .then((url) => {
+        //update image source 
+        document.getElementById("about-main").style.backgroundImage = "url(" + url + ")";
     })
     input.value = '';
 }
 //updating img in house painting 
 function uploadHouseFile(){
     const storageRef = firebase.storage().ref();
+    //make photo reference
     const houseRef = storageRef.child('painting.jpg');
     const input = document.querySelector('#house-input');
 
     const file = input.files.item(0);
 
     const task = houseRef.put(file);
+    //get URL from reference 
     houseRef.getDownloadURL()
     .then((url) => {
         const img = document.getElementById("house-img");
+        //update image source 
         img.setAttribute('src', url);
     })
     input.value = '';
@@ -884,15 +940,18 @@ function uploadHouseFile(){
 //updating img in commercial painting 
 function uploadCommercialFile(){
     const storageRef = firebase.storage().ref();
+     //make photo reference
     const commercialRef = storageRef.child('commercial.jpg');
     const input = document.querySelector('#commercial-input');
 
     const file = input.files.item(0);
 
     const task = commercialRef.put(file);
+    //get URL from reference 
     commercialRef.getDownloadURL()
     .then((url) => {
         const img = document.getElementById("commercial-img");
+        //update image source 
         img.setAttribute('src', url);
     })
     input.value = '';  
@@ -900,15 +959,18 @@ function uploadCommercialFile(){
 //updating img in sheetrock
 function uploadSheetrockFile(){
     const storageRef = firebase.storage().ref();
+     //make photo reference
     const sheetrockRef = storageRef.child('sheetrock.jpg');
     const input = document.querySelector('#sheetrock-input');
 
     const file = input.files.item(0);
 
     const task = sheetrockRef.put(file);
+    //get URL from reference 
     sheetrockRef.getDownloadURL()
     .then((url) => {
         const img = document.getElementById("sheetrock-img");
+        //update image source 
         img.setAttribute('src', url);
     })
     input.value = '';  
@@ -916,15 +978,18 @@ function uploadSheetrockFile(){
 //updating img in roofing
 function uploadRoofingFile(){
     const storageRef = firebase.storage().ref();
+     //make photo reference
     const roofingRef = storageRef.child('roofing.jpg');
     const input = document.querySelector('#roofing-input');
 
     const file = input.files.item(0);
 
     const task = roofingRef.put(file);
+    //get URL from reference 
     roofingRef.getDownloadURL()
     .then((url) => {
         const img = document.getElementById("roofing-img");
+        //update image source 
         img.setAttribute('src', url);
     })
     input.value = '';  
@@ -932,15 +997,18 @@ function uploadRoofingFile(){
 //updating img in flooring
 function uploadFlooringFile(){
     const storageRef = firebase.storage().ref();
+     //make photo reference
     const flooringRef = storageRef.child('flooring.jpg');
     const input = document.querySelector('#flooring-input');
 
     const file = input.files.item(0);
 
     const task = flooringRef.put(file);
+    //get URL from reference 
     flooringRef.getDownloadURL()
     .then((url) => {
         const img = document.getElementById("flooring-img");
+        //update image source 
         img.setAttribute('src', url);
     })
     input.value = '';  
@@ -948,15 +1016,18 @@ function uploadFlooringFile(){
 //updating img in pressure-washing
 function uploadWashingFile(){
     const storageRef = firebase.storage().ref();
+     //make photo reference
     const washingRef = storageRef.child('washing.jpg');
     const input = document.querySelector('#washing-input');
 
     const file = input.files.item(0);
 
     const task = washingRef.put(file);
+    //get URL from reference 
     washingRef.getDownloadURL()
     .then((url) => {
         const img = document.getElementById("washing-img");
+        //update image source 
         img.setAttribute('src', url);
     })
     input.value = '';  
@@ -964,15 +1035,18 @@ function uploadWashingFile(){
 //updating img in siding
 function uploadSidingFile(){
     const storageRef = firebase.storage().ref();
+     //make photo reference
     const sidingRef = storageRef.child('siding.jpg');
     const input = document.querySelector('#siding-input');
 
     const file = input.files.item(0);
 
     const task = sidingRef.put(file);
+    //get URL from reference 
     sidingRef.getDownloadURL()
     .then((url) => {
         const img = document.getElementById("siding-img");
+        //update image source 
         img.setAttribute('src', url);
     })
     input.value = '';  
@@ -980,15 +1054,18 @@ function uploadSidingFile(){
 //updating img in framing
 function uploadFramingFile(){
     const storageRef = firebase.storage().ref();
+     //make photo reference
     const framingRef = storageRef.child('framing.jpg');
     const input = document.querySelector('#framing-input');
 
     const file = input.files.item(0);
 
     const task = framingRef.put(file);
+    //get URL from reference 
     framingRef.getDownloadURL()
     .then((url) => {
         const img = document.getElementById("framing-img");
+        //update image source 
         img.setAttribute('src', url);
     })
     input.value = '';  
@@ -996,62 +1073,61 @@ function uploadFramingFile(){
 
 //going to log in page
 function logIn(){
-    newwindow =window.open('logIn.html', 'name', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
-    if (window.focus) {newwindow.focus()}
-        return false;
+    window.location.replace("logIn.html");
 }
 
 // log in to firebase
 function logInFirebase(){
     var email = document.getElementById('typeEmailX');
     var password = document.getElementById('typePasswordX');
-    console.log('got in')
-    console.log(email.value);
-    console.log(password.value);
+    //authenticating
     firebase.auth().signInWithEmailAndPassword(email.value, password.value)
         .then((userCredential) => {
             // Signed in
             var user = userCredential.user;
-            console.log(user)
             var uid = user.uid;
             firebase.auth().onAuthStateChanged((user) => {
+                //if there is user signed in
                 if (user) {
-                  // User is signed in, see docs for a list of available properties
-                  // https://firebase.google.com/docs/reference/js/firebase.User
-                  var uid = user.uid;
-                  const db = firebase.firestore();
-                  const users = db.collection('users').doc('admins').collection('info');
-                  users
-                  .get()
-                  .then(c => {
-                      c.docs.forEach(a => {
-                            console.log(a.data().UID)
-                            console.log(uid)
-                            if(a.data().UID == uid){
-                                window.location.replace("admin-index.html");
-                            }else{
-                                window.location.replace("employee-index.html");
-                          }
-                      })
-                  })
-                } else {
-                  // User is signed out
-                  // ...
-                }
-              });
+                    // User is signed in, see docs for a list of available properties
+                    // https://firebase.google.com/docs/reference/js/firebase.User
+                    var uid = user.uid;
+                    const db = firebase.firestore();
+                    //get user database admin document 
+                    const users = db.collection('users').doc('admins').collection('info');
+                    users
+                    .get()
+                    .then(c => {
+                        c.docs.forEach(a => {
+                                //if there is a match of UID in admin document, then redirect to admin-index
+                                if(a.data().UID == uid){
+                                    window.location.replace("admin-index.html");
+                                //else redirect to employee page
+                                }else{
+                                    window.location.replace("employee-requests.html");
+                            }
+                        })
+                    })
+                    } else {
+                    // User is signed out
+                    // ...
+                    }
+                });
         })
         .catch((error) => {
             var errorCode = error.code;
             var errorMessage = error.message;
-            console.log(error)
+            //if not authenticated and try again
             window.location.replace("retryLogin.html");
         });
 }
 
 //logging out by button
 function logOut(){
+    //signed out of firebase account 
     firebase.auth().signOut()
         .then(() => {
+            //then redirect to index
             window.location.replace("index.html");
         })
         .catch(console.log)
